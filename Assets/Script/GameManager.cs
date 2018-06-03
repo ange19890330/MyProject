@@ -284,4 +284,71 @@ public class GameManager : MonoBehaviour {
             ExChangeSweets(pressedSweet, enteredSweet);
         }
     }
+
+    /// <summary>
+    /// 匹配方法
+    /// </summary>
+    /// <param name="sweet">当前选中甜品</param>
+    /// <param name="newX">位置，x坐标</param>
+    /// <param name="newY">位置，Y坐标</param>
+    /// <returns></returns>
+    public List<GameSweet> MatchSweets(GameSweet sweet, int newX, int newY)
+    {
+        if(sweet.CanColor())
+        {
+            ColorSweet.ColorType color = sweet.ColoredComponent.Color;
+            List<GameSweet> matchRowSweets = new List<GameSweet>();
+            List<GameSweet> matchLineSweets = new List<GameSweet>();
+            List<GameSweet> finishedMatchingSweets = new List<GameSweet>();
+
+            //行匹配
+            matchRowSweets.Add(sweet);
+
+            //i=0代表往左，i=1代表往右
+            for(int i = 0; i <= 1; i++)
+            {
+                for (int xDistance = 0; xDistance < xColumn; xDistance++)
+                {
+                    int x;
+                    if (i == 0)
+                    {
+                        x = newX - xDistance;
+                    }
+                    else
+                    {
+                        x = newX + xDistance;
+                    }
+                    if (x < 0 || x >= xColumn)
+                    {
+                        break;
+                    }
+
+                    if(sweets[x,newY].CanColor() && sweets[x,newY].ColoredComponent.Color == color)
+                    {
+                        matchRowSweets.Add(sweets[x, newY]);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            //检查一下当前行遍历列表中的元素数量是否大于3
+            if(matchRowSweets.Count >= 3)
+            {
+                for(int i = 0; i < matchRowSweets.Count; i++)
+                {
+                    finishedMatchingSweets.Add(matchRowSweets[i]);
+                }
+            }
+
+            if(finishedMatchingSweets.Count >= 3)
+            {
+                return finishedMatchingSweets;
+            }
+        }
+
+        return null;
+    }
 }
